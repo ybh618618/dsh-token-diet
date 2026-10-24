@@ -25,7 +25,7 @@
 ![Token 统计页总览](docs/media/overview.png)
 
 演示用的 GIF（800px 宽，镜头 7–8：80% 提醒 → 到达预算停下）与统计页截图都在
-[docs/media/](docs/media/)，替换素材时注意体积（GIF ≤ 8 MB）。宣传片的工程与出片流水线是作者私有内容，不在本仓库。
+[docs/media/](docs/media/)，替换素材时注意体积（GIF ≤ 8 MB）。
 
 ## 安装
 
@@ -94,19 +94,6 @@ Host 端代码在 dsh 启动时载入，升级或改动 Host 端之后需要**�
 所有数值键都必须为正数，否则回退默认值；完整解析规则见 `packages/token-diet/lib/index.js` 的
 `normalizeConfig`。
 
-## 与实施方案的差异
-
-| 实施方案 | 实际实现 | 原因 |
-| --- | --- | --- |
-| 预算写进会话日志的新事件 | 写 `<DSH_HOME>/token-diet/budgets.v1.json` | dsh 的会话事件类型是封闭集合，新增类型会导致会话无法重新打开 |
-| 通过 `budget-reached` 事件通知前端 | 前端每 1500 ms 轮询 `sessionCost` | 不需要新增事件，也不需要额外的推送通道 |
-| 预算框注册在 `conversation.composer.bar` | 注册在 `conversation.input.right` | 该槽位与模型选择器同栏，且在当前 dsh 版本可用 |
-| 复用 `@deepseek-ai/dsh-token-meter` 折叠用量 | Host 自行读取 `sessionPersistence` 并折叠事件 | Host 只依赖 `node:*`，dsh 升级时适配点集中在 `lib/index.js` 与 `lib/host/rpc.js` |
-| 价格匹配不做自动模糊匹配 | 增加模糊匹配，但强制标注「不精确的模糊匹配」 | 供应商 id 经常对不上；标注后仍由用户决定是否采用 |
-| 按调用时的价格版本计算历史成本 | 统一按当前价格与当前汇率重算 | models.dev 只提供当前价；历史金额会随价格、汇率更新而微调 |
-| 多文件客户端 + 前端构建链 | 单文件普通 JS bundle，`scripts/build-client.mjs` 直接拼接 | 不引入 JSX/TS 与打包器，插件加载更稳定 |
-| 用 `followup()` / force-continue 继续任务 | 挂起 `agent/pre-step`，由「提高预算并继续」放行 | 同一步直接继续，不产生模型可见的额外消息 |
-
 ## 数据与隐私
 
 - **只读** `<DSH_HOME>/sessions/**` 下的会话日志，用来计算用量；不改写、不新增会话事件。
@@ -123,7 +110,6 @@ Host 端代码在 dsh 启动时载入，升级或改动 Host 端之后需要**�
 - [开发](docs/DEVELOPMENT.md)：目录结构、构建与测试、配置与硬性约束。
 - [贡献指南](CONTRIBUTING.md)：开发环境、提交前检查与改动生效规则。
 - [发布流程](RELEASING.md)：版本、打 tag、npm 发布与演示素材上传。
-- 宣传片工程与出片流水线：作者私有，不在本仓库。
 
 ## License
 
