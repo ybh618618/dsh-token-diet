@@ -35,11 +35,8 @@
 dsh plugin add dsh-token-diet
 ```
 
-指定 profile（例如桌面端）：
-
-```bash
-dsh plugin --profile desktop add dsh-token-diet
-```
+安装到桌面端
+直接在插件页面，添加插件处输入dsh-token-diet然后安装即可
 
 从仓库目录安装（先在仓库根目录执行）：
 
