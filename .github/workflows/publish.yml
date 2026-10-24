@@ -83,8 +83,22 @@ jobs:
             exit 1
           fi
 
+      # The first version is published by hand (the package has to exist before a
+      # trusted publisher can be attached). Re-running this workflow for that tag
+      # must not fail, so an already-published version is a no-op.
+      - name: Skip when this version already exists
+        id: exists
+        run: |
+          VERSION="$(node -p "require('./packages/token-diet/package.json').version")"
+          if npm view "dsh-token-diet@$VERSION" version >/dev/null 2>&1; then
+            echo "already=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::dsh-token-diet@$VERSION is already on npm — nothing to publish"
+          else
+            echo "already=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Publish (trusted publishing)
-        if: github.event_name == 'release' || inputs.mode == 'publish'
+        if: (github.event_name == 'release' || inputs.mode == 'publish') && steps.exists.outputs.already != 'true'
         working-directory: packages/token-diet
         # No NODE_AUTH_TOKEN on purpose: once the trusted publisher is configured,
         # npm trades the workflow's OIDC token for a short-lived publish credential.
