@@ -1,0 +1,20 @@
+{
+  "name": "dsh-token-diet",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Token usage statistics and per-session budget for the DeepSeek Harness Web GUI",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ybh618618/dsh-token-diet.git"
+  },
+  "scripts": {
+    "build": "node scripts/build-client.mjs",
+    "test": "node --test \"test/*.test.mjs\"",
+    "check": "node --check packages/token-diet/lib/index.js && node --check packages/token-diet/lib/client.js"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

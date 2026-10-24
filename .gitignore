@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Python bytecode (tooling)
+__pycache__/
+*.py[cod]
+
+# Logs and local debugging scratch
+*.log
+.asar-list.txt
+.dsh-probe.txt
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# OS and editor droppings
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+
+# Temp files
+*.tmp
+*.temp
+

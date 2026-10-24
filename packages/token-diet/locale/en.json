@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Token Diet",
+    "description": "Token usage and cost across every session, sub-agent and scheduled task, with models.dev pricing, CNY/USD display and a per-session budget that stops the task when it is reached."
+  }
+}

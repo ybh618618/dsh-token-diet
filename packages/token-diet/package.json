@@ -1,0 +1,58 @@
+{
+  "name": "dsh-token-diet",
+  "version": "0.1.0",
+  "description": "Token 统计与按会话预算：汇总所有会话、子智能体和自动化任务的用量与成本，并在预算耗尽时停止任务。",
+  "license": "MIT",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./icon": "./icon.svg",
+    "./locale/*.json": "./locale/*.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "locale/*.json",
+    "icon.svg",
+    "cordis.patch.yml"
+  ],
+  "keywords": [
+    "deepseek",
+    "dsh",
+    "plugin",
+    "token",
+    "usage",
+    "cost",
+    "budget"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ybh618618/dsh-token-diet.git",
+    "directory": "packages/token-diet"
+  },
+  "homepage": "https://github.com/ybh618618/dsh-token-diet",
+  "bugs": {
+    "url": "https://github.com/ybh618618/dsh-token-diet/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "manifestVersion": 1,
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-conversation"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -1,0 +1,9 @@
+* text=auto eol=lf
+
+# Rendered media and AI art are binary.
+*.png binary
+*.gif binary
+*.mp4 binary
+*.wav binary
+*.jpg binary
+*.woff2 binary

@@ -1,0 +1,91 @@
+name: Publish to npm
+
+# Publishing is driven by a GitHub Release, not by a bare tag push: creating the
+# release is the "ship it" button, and the tag it points at decides which version
+# goes out (checked below, so a mismatch cannot ship the wrong thing).
+#
+# Authentication is OIDC **trusted publishing** — no long-lived npm token lives in
+# this repository. Configure once on npmjs.com (package → Settings → Trusted
+# publishing):
+#
+#   Publisher:            GitHub Actions
+#   Organization or user: ybh618618
+#   Repository:           dsh-token-diet
+#   Workflow filename:    publish.yml
+#   Environment:          (leave empty)
+#
+# `id-token: write` lets the runner mint the short-lived OIDC token that npm
+# exchanges for a one-time publish credential; `--provenance` attaches a signed
+# statement of where and how the package was built.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'verify = pack only, publish = actually publish'
+        type: choice
+        options: [verify, publish]
+        default: verify
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Build, test and publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+          # Trusted publishing needs the registry that mints the OIDC exchange.
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Build client bundle
+        run: npm run build
+
+      - name: Syntax check
+        run: npm run check
+
+      - name: Test
+        run: npm test
+
+      - name: Verify the tarball contents
+        working-directory: packages/token-diet
+        run: npm pack --dry-run
+
+      # A release whose tag disagrees with the package version would publish the
+      # wrong code under the right number, so refuse it early.
+      - name: Check the version matches the release tag
+        if: github.event_name == 'release'
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          VERSION="$(node -p "require('./packages/token-diet/package.json').version")"
+          echo "tag=$TAG package=$VERSION"
+          if [ "v$VERSION" != "$TAG" ]; then
+            echo "::error::release tag $TAG does not match packages/token-diet version $VERSION"
+            exit 1
+          fi
+
+      - name: Publish (trusted publishing)
+        if: github.event_name == 'release' || inputs.mode == 'publish'
+        working-directory: packages/token-diet
+        # No NODE_AUTH_TOKEN on purpose: once the trusted publisher is configured,
+        # npm trades the workflow's OIDC token for a short-lived publish credential.
+        run: npm publish --provenance --access public
