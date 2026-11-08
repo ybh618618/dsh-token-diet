@@ -36,7 +36,7 @@ export const name = 'token-diet'
 export const Config = undefined
 
 /** Services this plugin starts with when the composition provides them. */
-export const inject = []
+export const inject = ['sessionPersistence']
 
 const DEFAULT_HOLD_MS = 300_000
 const DEFAULT_PRICE_TTL_MS = 86_400_000
